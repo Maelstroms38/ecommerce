@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- {{ object_list }} returns an instance of ProductListView -->
+
+<table class="table">
+
+{% for object in object_list %}
+<tr>
+<td><a href='{{ object.get_absolute_url }}'>{{ object.title }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<!-- {{ now }} timezone.now()
+
+{{ user }} -->
+
+{% endblock %}
