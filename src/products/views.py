@@ -38,12 +38,15 @@ def product_detail_view_func(request, id):
 	return render(request, template, context)
 
 class ExampleView(TemplateView):
-    template_name = "example.html"
+    template_name = "products/example.html"
 
     def get_context_data(self, **kwargs):
         context = super(ExampleView, self).get_context_data(**kwargs)
-        example = Example.objects.get(id=self.request.GET["id"])
-        context["title"] = example.title
-        context["content"] = example.content
-        context["link"] = example.link
+        if self.request.GET.get('id'):
+	        example = Example.objects.get(id=self.request.GET["id"]).all()
+	       	context["title"] = example.title
+	       	context["content"] = example.content
+	       	context["link"] = example.link
+       	else:
+       		print "no example"
         return context

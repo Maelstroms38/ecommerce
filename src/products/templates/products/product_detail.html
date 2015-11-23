@@ -2,6 +2,39 @@
 
 {% block content %}
 
-{{ object.title }}
+<div class="row">
+<div class='col-sm-8'>
+<h2>{{ object.title }}</h2>
+{% if object.productimage_set.count > 0 %}
 
+<div>
+	{% for img in object.productimage_set.all %}
+<img src='{{ img.image.url }}' class='img-responsive'>
+{% endfor %}
+{% endif %}
+<p class="lead">
+	{{ object.description }}
+</p>
+</div>
+
+<!-- Product Sidebar -->
+<div class='col-sm-4'>
+<h3>{{ object.price }}</h3>
+{% if object.variation_set.count > 1 %}
+<select class="form-control">
+{% for vari_obj in object.variation_set.all %}
+
+<option value="{{ vari_obj.id }}">{{ vari_obj}}</option>
+
+{% endfor %}
+</select>
+{% endif %}
+<br>
+<a href="#" class='btn btn-default'>Add to Cart</a>
+<hr>
+<h4>Related Products</h4>
+
+</div>
+</div>
+<!-- End Product Sidebar -->
 {% endblock %}
