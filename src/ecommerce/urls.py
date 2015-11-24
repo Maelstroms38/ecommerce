@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^products/', include('products.urls')),
     url(r'^accounts/', include('registration.backends.default.urls')),
+    
 ]
 
 if settings.DEBUG:
