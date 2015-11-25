@@ -10,6 +10,5 @@ class VariationInventoryForm(forms.ModelForm):
 		"sale_price",
 		"inventory",
 		"active",
-		"title"
 		]
-VariationInventoryFormSet = modelformset_factory(Variation, form=VariationInventoryForm, extra=2)
+VariationInventoryFormSet = modelformset_factory(Variation, form=VariationInventoryForm, extra=0)
