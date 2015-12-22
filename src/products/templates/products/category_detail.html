@@ -4,18 +4,14 @@
 
 <h3>{{object}}</h3>
 
-<table class="table">
-<!-- {{object.product_set.all}} -->
-
-{% for product in products %}
-
-<tr>
-<td><a href='{{ product.get_absolute_url }}'>{{ product.title }}</td>
-</tr>
+<div class="row">
+	{% for product in products %}
+<!-- {{ object_list }} returns an instance of ProductListView -->
+<div class='col-xs-4'>
+{% include "products/product_thumbnail.html" with product=product price="True" %}
+</div>
+ {% cycle '' '' '</div><hr><div class="row">' %}
 
 {% endfor %}
-
-{{ object.default_category.all }}
-
-</table>
+</div>
 {% endblock %}

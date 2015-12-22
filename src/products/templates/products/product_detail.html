@@ -24,12 +24,10 @@ $(".variation_select").change(function(){
 <div class="row">
 <div class='col-sm-8'>
 <h2>{{ object.title }} </h2>
-{% if object.productimage_set.count > 0 %}
+{% if object.get_image_url %}
 
 <div>
-	{% for img in object.productimage_set.all %}
-<img src='{{ img.image.url }}' class='img-responsive'>
-{% endfor %}
+<img src='{{ object.get_image_url }}' class='img-responsive'>
 {% endif %}
 <p class="lead">
 	{{ object.description }}
@@ -74,12 +72,13 @@ Share<br/>
 
 <hr/>
 <h4>Related Products</h4>
-
+<div class="row">
 {% for product in related %}
-
-<a href='{{ product.get_absolute_url }}'>{{ product.title }}</a>
-
+<div class='col-xs-6'>
+{% include "products/product_thumbnail.html" with product=product price="True"  %}
+ {% cycle '' '</div><div class="row">' %}
 {% endfor %}
+    </div>
 
 </div>
 </div>

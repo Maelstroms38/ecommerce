@@ -2,18 +2,18 @@
 
 {% block content %}
 
+<h1>All Products <small><a href='{% url "categories" %}'>Categories</small></h1>
+<div class="row">
+	{% for product in object_list %}
 <!-- {{ object_list }} returns an instance of ProductListView -->
-
-<table class="table">
-
-{% for object in object_list %}
-<tr>
-<td><a href='{{ object.get_absolute_url }}'>{{ object.title }}</td>
-</tr>
+<div class='col-xs-4'>
+{% include "products/product_thumbnail.html" with product=product price="True"  %}
+</div>
+ {% cycle '' '' '</div><hr><div class="row">' %}
 
 {% endfor %}
+</div>
 
-</table>
 
 <!-- {{ now }} timezone.now()
 

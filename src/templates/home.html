@@ -12,8 +12,16 @@
 }
 
 .jumbotron {
-	background-color:#0E3D14;
+	background-color:#388ff2;
 	color: #FFF;
+
+	{% if featured_image.make_image_background %}
+
+	background-image: url("{{ featured_image.image.url }}");
+	background-repeat: no-repeat;
+	background-size: cover;
+
+	{% endif %}
 }
 
 {% endblock %}
@@ -23,7 +31,26 @@
      
 {% block jumbotron %}
  {% if not request.user.is_authenticated %}
-
+ {% if featured_image %}
+ <div class="jumbotron">
+ <div class="container">
+	<div class="row">
+		<div class='col-sm-12 text-center {% if featured_image_text_right %} pull-right {% endif %}'>
+		<h1>{{ featured_image.product.title }}</h1>
+		<p>{{ featured_image.product.description }}</p>
+		<p>
+		<a class="btn btn-lg btn-primary" href="{{ featured_image.product.get_absolute_url }}" role="button">More &raquo;</a>
+		</p>
+		</div>
+		{% if not featured_image.make_image_background %}
+		<div class='col-sm-6' >
+			<img src="{{ featured_image.image.url }}" class="img-responsive">
+ 		</div>
+ 		{% endif %}
+		</div>
+	</div>
+ </div>
+ {% else %}
 <div class="jumbotron">
  <div class="container">
 	<div class="row">
@@ -41,6 +68,7 @@
 		</div>
 	</div>
  </div>
+ {% endif %}
  {% endif %}
 {% endblock %}
 
