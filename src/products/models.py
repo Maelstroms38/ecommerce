@@ -14,17 +14,25 @@ class ProductManager(models.Manager):
 
 	def all(self, *args, **kwargs):
 		return self.get_queryset().active()
+       
+        def get_related(self, instance):
+            products_one = self.get_queryset().filter(categories__in = instance.categories.all())
+            products_two = self.get_queryset().filter(default=instance.default)
+            qs = (products_one | products_two).exclude(id=instance.id).distinct
+            return qs #self.get_queryset()
 
 class Product(models.Model):
 	title = models.CharField(max_length=120)
 	description = models.TextField(blank=True, null=True)
 	price = models.DecimalField(decimal_places=2, max_digits=1000)
 	active = models.BooleanField(default=True)
-
         categories = models.ManyToManyField('Category', blank=True)
         default = models.ForeignKey('Category', related_name='default_category', null=True, blank=True)
     
 	objects = ProductManager()
+
+        class Meta:
+            ordering = ["title"]
 
 	def __unicode__(self):
 		return self.title
@@ -87,6 +95,8 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.title
+    def get_absolute_url(self):
+        return reverse("category_detail", kwargs={"slug": self.slug })
 
 class Topic(models.Model):
     """

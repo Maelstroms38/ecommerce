@@ -11,7 +11,24 @@ from .mixins import StaffRequiredMixin, LoginRequiredMixin
 import json
 # Create your views here.
 
-from .models import Product, Example, Topic, Concept, Variation
+from .models import Product, Example, Topic, Concept, Variation, Category
+
+class CategoryListView(ListView):
+	model = Category
+	queryset = Category.objects.all()
+	template_name = "products/product_list.html"
+
+class CategoryDetailView(DetailView):
+	model = Category
+
+	def get_context_data(self, *args, **kwargs):
+		context = super(CategoryDetailView, self).get_context_data(*args, **kwargs)
+		obj = self.get_object()
+		product_set = obj.product_set.all()
+		default_products = obj.default_category.all()
+		products = (product_set | default_products).distinct() #combines default category
+		context["products"] = products
+		return context
 
 class VariationListView(StaffRequiredMixin, ListView):
 	model = Variation
@@ -76,6 +93,11 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView):
 	model = Product
 	#template_name = "product.html"
+	def get_context_data(self, *args, **kwargs):
+		context = super(ProductDetailView, self).get_context_data(*args, **kwargs)
+		instance = self.get_object()
+		context["related"] = Product.objects.get_related(instance)
+		return context
 
 def product_detail_view_func(request, id):
 	product_instance = get_object_or_404(Product, id=id)

@@ -5,7 +5,7 @@ function setPrice(){
 	var price = $(".variation_select option:selected").attr("data-price")
 	var sale_price = $(".variation_select option:selected").attr("data-sale-price")
 	if (sale_price != "" && sale_price != "None" && sale_price != null ) {
-	$("#price").html("<h3>" + sale_price + "<small class='og-price'>" + price  + "</small></h3>");
+	$("#price").html("<h3>" + sale_price + "<br><small class='og-price'>" +  price + "</small></h3>");
 	} else {
 	$("#price").html(price);
 	}
@@ -23,7 +23,7 @@ $(".variation_select").change(function(){
 
 <div class="row">
 <div class='col-sm-8'>
-<h2>{{ object.title }}</h2>
+<h2>{{ object.title }} </h2>
 {% if object.productimage_set.count > 0 %}
 
 <div>
@@ -52,8 +52,8 @@ $(".variation_select").change(function(){
 {% else %}
 
 <h3 id='price'>{% if object.variation_set.sale_price %}
-{{ object.variation_set.first.sale_price }}
-<small class='og-price'>{{ object.variation_set.first.price }}</small>
+{{ object.variation_set.first.sale_price }} 
+<small class='og-price'>{{ object.variation_set.first.price }} </small>
 {% else %}
 {{ object.variation_set.first.price }}
 
@@ -74,6 +74,12 @@ Share<br/>
 
 <hr/>
 <h4>Related Products</h4>
+
+{% for product in related %}
+
+<a href='{{ product.get_absolute_url }}'>{{ product.title }}</a>
+
+{% endfor %}
 
 </div>
 </div>
