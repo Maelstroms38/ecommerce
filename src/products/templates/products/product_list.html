@@ -1,22 +1,33 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
+<br>
+<br>
+<br>
+<br>
+<div class='col-sm-2'>
+<form method="GET" action="{% url 'products' %}">
+{{ filter_form|crispy }}
+<input type='hidden' name='q' value='{{ request.GET.q }}' />
+<input type='submit' value='Apply Filter' class='btn btn-primary'>
 
-<h1>All Products <small><a href='{% url "categories" %}'>Categories</small></h1>
-<div class="row">
-	{% for product in object_list %}
-<!-- {{ object_list }} returns an instance of ProductListView -->
-<div class='col-xs-4'>
-{% include "products/product_thumbnail.html" with product=product price="True"  %}
+</form>
+<br>
+<a class='btn btn-primary' href="{% url 'products' %}">Clear Filter</a>
 </div>
- {% cycle '' '' '</div><hr><div class="row">' %}
 
-{% endfor %}
+<div class='col-sm-10'>
+
+<h1>All Answers <small><a href='{% url "categories" %}'>Categories</a></small></h1>
+
+{% if object_list.count == 0 %}
+
+{% else %}
+{% include "products/products.html" with object_list=object_list %}
+{% endif %}
+
 </div>
-
-
-<!-- {{ now }} timezone.now()
-
-{{ user }} -->
 
 {% endblock %}

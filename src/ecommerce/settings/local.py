@@ -16,6 +16,8 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #root of project
 
+#BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -23,12 +25,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 SECRET_KEY = 'csqwlmc8s55o($rt6ozh7u+ui9zb-et00w$d90j8$^!nvj41_r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'yourgmail@gmail.com'
+EMAIL_HOST_USER = 'stroms38@gmail.com'
 EMAIL_HOST_PASSWORD = 'yourpassword'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -57,8 +59,15 @@ INSTALLED_APPS = (
     'crispy_forms',
     'registration',
     #my apps
+    'answers',
     'newsletter',
     "products",
+    "carts",
+    "billing",
+    "django_filters",
+    "storages",
+    'gunicorn',
+    "djstripe",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,24 +126,84 @@ USE_L10N = True
 
 USE_TZ = True
 
+'''Image storage Amazon S3'''
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'examplefy'
 
+S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+STATIC_URL = S3_URL
+AWS_QUERYSTRING_AUTH = False
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+'''Static storage'''
+# # Static files (CSS, JavaScript, Images)
+# # https://docs.djangoproject.com/en/1.8/howto/static-files/
+
+# STATIC_ROOT = 'staticfiles'
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "static_root")
+    
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "media_root")
+
+# PROTECTED_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "protected_root")
+
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static", "static_root"),
+#     #os.path.join(BASE_DIR, "static_in_env"),
+#     #'/var/www/static/',
+# )
+
+
+#Production Code
+#Parse database configuration from $DATABASE_URL
+#import dj_database_url
+#DATABASES['default'] =  dj_database_url.config()
+# #BOTO S3 Storage for Production ONLY
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "static_root")
-    
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static_in_pro", "our_static"),
-    #os.path.join(BASE_DIR, "static_in_env"),
-    #'/var/www/static/',
+    os.path.join(BASE_DIR, 'static', "static_root"),
 )
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "media_root")
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static", "static_root")
 
+MEDIA_URL = S3_URL
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static", "media_root")
+PROTECTED_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static", "protected_root")
+
+# TEMPLATE_DIRS = (
+#     os.path.join(BASE_DIR, "templates"),
+# )
+# here() gives us file paths from the root of the system to the directory
+# holding the current file.
+here = lambda * x: os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+
+PROJECT_ROOT = here("..")
+# root() gives us file paths from the root of the system to whatever
+# folder(s) we pass it starting at the parent directory of the current file.
+root = lambda * x: os.path.join(os.path.abspath(PROJECT_ROOT), *x)
+
+TEMPLATE_DIRS = (
+    root('templates'),
+)
 
 #Crispy FORM TAGs SETTINGS
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -146,5 +215,48 @@ REGISTRATION_AUTO_LOGIN = True
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 
+#Braintree
+BRAINTREE_PUBLIC = "hsjhmqhy73rvpqbv"
+BRAINTREE_PRIVATE = "37b06da7e2cdb493bf0e0ddb1c47cbcd"
+BRAINTREE_MERCHANT = "bgd7scxjbcrz6dd2"
+BRAINTREE_ENVIRONMENT = "Sandbox"
 
+#Stripe
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_test_lLFAbBOc7bHtpxq5QnIp94xh")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_hWkIxMrsvR3IGJIRKLRy1Rts")
 
+CURRENCIES = getattr(settings, "DJSTRIPE_CURRENCIES", (
+    ('usd', 'U.S. Dollars',),
+    ('gbp', 'Pounds (GBP)',),
+    ('eur', 'Euros',))
+)
+
+DJSTRIPE_PLANS = {
+    "one-time": {
+        "stripe_plan_id": "one-time",
+        "name": "Examplefy ($0.99)",
+        "description": "A one-time buy to Examplefy",
+        "price": 99,  # $0.99
+        "currency": "usd",
+        "interval": "day"
+
+    },
+    "monthly": {
+        "stripe_plan_id": "pro-monthly",
+        "name": "Examplefy Pro ($4.99/month)",
+        "description": "The monthly subscription plan to Examplefy",
+        "price": 499,  # $4.99
+        "currency": "usd",
+        "interval": "month",
+        "interval_count": 1
+    },
+    "yearly": {
+        "stripe_plan_id": "pro-yearly",
+        "name": "Examplefy Prime ($49/year)",
+        "description": "The annual subscription plan to Examplefy",
+        "price": 4900,  # $49.00
+        "currency": "usd",
+        "interval": "year",
+        "interval_count": 1
+    }
+}

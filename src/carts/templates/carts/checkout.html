@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+<script>
+{% block jquery %}
+// We generated a client token for you so you can test out this code
+// immediately. In a production-ready integration, you will need to
+// generate a client token on your server (see section below).
+var clientToken = "{{ client_token }}";
+
+braintree.setup(clientToken, "dropin", {
+  container: "payment-form"
+});
+
+{% endblock %}
+</script>
+{% block content %}
+
+{% if not user_can_continue %}
+<h1>Checkout</h1>
+<div class='col-sm-6'>
+	
+<p class="lead">Continue As Guest</p>
+<form method="POST" action=''>{% csrf_token %}
+{{ form|crispy }}
+<input type='submit' class='btn btn-success' value='Continue As Guest' />
+</form>
+
+</div>
+
+<div class='col-sm-6'>
+	<p class="lead">Login to Checkout</p>
+<form method="POST" action="{% url 'auth_login' %}">{% csrf_token %}
+{{ login_form|crispy }}
+<input type="hidden" name="next" value='{{ next_url }}' />
+<input type='submit' class='btn btn-success' value='Login' />
+</form>
+
+</div>
+{% else %}
+
+{% include "billing/order_summary.html" with order=order %}
+<p>
+ <a href='{% url "order_address" %}'>Change an Address</a>
+</p>
+<br/>
+<form id="checkout" method="POST" action="{% url 'checkout_final' %}">{% csrf_token %}
+<!-- <input type="hidden" name="payment_token" value="ABC"/> -->
+  <div id="payment-form"></div>
+<p><b><button class="btn btn-primary" type="submit">Complete Order</b></button>
+</form>
+<p>
+
+</div>
+
+{% endif %}
+{% endblock %}

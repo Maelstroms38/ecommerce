@@ -11,7 +11,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>{% block head_title %}MVP Landing{% endblock %}</title>
+    <title>{% block head_title %}Examplefy{% endblock %}</title>
 
     {% include 'head_css.html' %}
 
@@ -20,38 +20,32 @@
       </style>
 
 
-
   </head>
 
   <body>
-  {% include 'navbar.html' %}
-  {% if messages %}
+
+     {% if messages %}
 
 <div class='container'>
+
 <div class='alert alert-success text-center alert-dismissible'>
  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 {% for message in messages %}
-  <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p><br/>
+  <p>{% if message.tags %} <!-- "{{ message.tags }}!" --> {% endif %} {{ message }}</p><br/>
   {% endfor %}
 </div>
 
 </div>
-{% endif %}
+            {% endif %}
 
 
-{% block jumbotron %}
-          
-            {% endblock %}
-    <div class="container">
-            
+            {% include 'navbar.html' %}
 
-          
             {% block content %}
 
             {% endblock %}
-              
 
-    </div> <!-- /container -->
+          
 
     {% include "javascript.html" %}
     <script>

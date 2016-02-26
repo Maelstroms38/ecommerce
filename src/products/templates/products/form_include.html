@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+
+<header>
+        <div class="header-content" id="ask_form">
+            <div class="header-content-inner">
+              <h1 style="color:white" class="form">{{title}} Question</h1>
+              <hr class="form">
+                <div class="container-fluid">
+
+                <div class="row">
+    				<form method="POST" action="" enctype='multipart/form-data'>{% csrf_token %}{{ form|crispy }}
+<input type='submit' class="btn-default btn-lg" value='{% if submit_btn %}{{ submit_btn }}{% else %}Submit{% endif %}' /><br><br>
+<input type='submit' class="btn-default btn-lg" value='{% if submit_btn2 %}{{ submit_btn2 }}{% else %}{% endif %}'/>
+</form>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </header>

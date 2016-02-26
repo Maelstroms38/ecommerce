@@ -1,0 +1,30 @@
+<table>
+
+    {% for instance in product_list %}
+    <tr class="">
+        <td>
+            {{ instance.id }}
+        </td>
+        <td>
+            <a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a>
+        </td>
+        <td>
+        
+<h1 class="col-sm-offset-5"><a href='{% url "categories" %}'>Categories</h1>
+<div class="row">
+    {% for product in object_list %}
+<!-- {{ object_list }} returns an instance of ProductListView -->
+<div class='col-xs-4'>
+{% include "products/product_thumbnail.html" with product=product price="True"  %}
+</div>
+ {% cycle '' '' '</div><hr><div class="row">' %}
+
+{% endfor %}
+</div>
+        </td>
+   </li>
+{% empty %}
+    <li>No Products yet.</li>
+{% endfor %}
+
+</table>

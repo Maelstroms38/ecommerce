@@ -1,11 +1,38 @@
 {% extends "base.html" %}
+
 <script>
 {% block jquery %}
+
+function update_iframe_size(){
+	var parent_id = $("iframe").parent().attr("id");
+	if (parent_id == "main_video") {
+		var parent_class = $("iframe").parent().attr("class");
+		var parent_width = $("iframe").parent().width();
+		console.log(parent_class);
+		var width = $("iframe").css("width"); // $("iframe").width();
+		var height = $("iframe").css("height");
+		var ratio = parseInt(height)/parseInt(width);
+		var new_height = parseInt(parent_width) * ratio
+		$("iframe").css("width", parent_width);
+		$("iframe").css("height", new_height);
+	}
+}
+update_iframe_size()
+$(window).bind("resize", function(){
+	// alert("reized");
+	update_iframe_size();
+});
+$('.reply_btn').click(function(e){
+	e.preventDefault();
+	$(this).next(".reply_comment").fadeToggle();
+	// $(".reply_comment").fadeToggle();
+})
+
 function setPrice(){
 	var price = $(".variation_select option:selected").attr("data-price")
 	var sale_price = $(".variation_select option:selected").attr("data-sale-price")
 	if (sale_price != "" && sale_price != "None" && sale_price != null ) {
-	$("#price").html("<h3>" + sale_price + "<br><small class='og-price'>" +  price + "</small></h3>");
+	$("#price").html("<h3>" + sale_price + " <small class='og-price'>" + price  + "</small></h3>");
 	} else {
 	$("#price").html(price);
 	}
@@ -16,51 +43,111 @@ $(".variation_select").change(function(){
 	// var img = $(".variation_select option:selected").attr("data-img")
 	// $("img").attr("src", img);
 })
+$("#submit-btn").click(function(event){
+	event.preventDefault();
+	var formData = $("#add-form").serialize();
+	console.log(formData);
+	$.ajax({
+		type: "GET", // "POST"
+		url: "{% url 'cart' %}",
+		data: formData,
+		success: function(data) {
+			showFlashMessage(data.flash_message);
+			updateCartItemCount(); 
+			
+		}, 
+		error: function(response, error) {
+			// console.log(response)
+			// console.log(error)
+			$("#add-form").submit()
+		}
+	})
+	// $("#add-form").submit()
+})
+
 {% endblock %}
 </script>
 
+
 {% block content %}
+<div class='row'>
 
-<div class="row">
 <div class='col-sm-8'>
-<h2>{{ object.title }} </h2>
-{% if object.get_image_url %}
+<h2>{{ object.title }}</h2>
 
-<div>
-<img src='{{ object.get_image_url }}' class='img-responsive'>
+<p class='lead'>
+<b> {{ object.description }} </b><br>
+<br>
+
+<div class='col-sm-12' id='main_video'>
+	{% if object.embed_code %}
+{{ object.embed_code|safe }}
+	{% else %}
+	<b>Answer Pending!</b><br>
 {% endif %}
-<p class="lead">
-	{{ object.description }}
+
+
+{% if object.get_image_url %}
+<img id='img' class='img-responsive' src='{{ object.get_image_url }}' />
+{% endif %}
+
+
+{% if object.media %}
+{% if request.user.is_authenticated %} 
+{% if object in request.user.myproducts.products.all %}
+<a href="{{ object.get_absolute_url }}update">Update</a> |
+{% endif %}
+<a href="{{ object.get_download }}?preview=True">Preview</a> | 
+<a href="{{ object.get_download }}">Download</a>
+{% endif %}
+{% endif %}
+
+{% if object.thumbnail_set.all.count > 0 %}
+{% for img in object.thumbnail_set.all %}
+<a href="{{ object.get_download }}?preview=True"><img src="{% if img.media %}{{ img.media.url }}{% else %}{% endif %}" class='img-responsive' /></a><br>
+
+{% endfor %}
+{% endif %}
 </p>
+</div>
 </div>
 
 <!-- Product Sidebar -->
 <div class='col-sm-4'>
 
-{% if object.variation_set.count > 1 %}
 <h3 id='price'>{{ object.variation_set.first.price }}</h3>
-<select class="form-control variation_select">
-{% for vari_obj in object.variation_set.all %}
 
-<option data-sale-price="{{vari_obj.sale_price}}" data-price="{{ vari_obj.price }}" value="{{ vari_obj.id }}">{{ vari_obj}}</option>
+<form id='add-form' method='GET' action="{% url 'cart' %}">
+<p id='jquery-message' class='lead'>
+</p>
+	{% if object.variation_set.count > 1 %}
+	<!-- <h3 id='price'>{{ object.variation_set.first.price }}</h3> -->
 
-{% endfor %}
-</select>
+	<select name='item' class='form-control variation_select'>
+		{% for vari_obj in object.variation_set.all %}
+		<option  data-sale-price="{{ vari_obj.sale_price }}" data-price="{{ vari_obj.price }}" value="{{ vari_obj.id }}">{{ vari_obj }}</option>
+		{% endfor %}
+		</select>
 
-{% else %}
+	{% else %}
+		<input type="hidden" name='item' value='{{ object.variation_set.first.id }}' />
+			<!-- <h3 id='price'>{% if object.variation_set.first.sale_price %}
+			{{ object.variation_set.first.sale_price  }}
+			<small class='og-price'>{{ object.variation_set.first.price }}</small>
+			{% else %}
+			
+			{{ object.variation_set.first.price }} -->
+			{% endif %}
+		</h3>
 
-<h3 id='price'>{% if object.variation_set.sale_price %}
-{{ object.variation_set.first.sale_price }} 
-<small class='og-price'>{{ object.variation_set.first.price }} </small>
-{% else %}
-{{ object.variation_set.first.price }}
 
-{% endif %}
-</h3>
-{% endif %}
-<br>
-<a href="#" class='btn btn-default'>Add to Cart</a>
-<hr>
+	{% endif %}
+	<br/>
+<input id='submit-btn' type='submit' value='Add to Cart' class='btn btn-primary' />
+</form>
+
+<br/>
+<hr/>
 <p>
 Share<br/>
 <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">
@@ -71,16 +158,28 @@ Share<br/>
 </p>
 
 <hr/>
-<h4>Related Products</h4>
-<div class="row">
-{% for product in related %}
-<div class='col-xs-6'>
-{% include "products/product_thumbnail.html" with product=product price="True"  %}
- {% cycle '' '</div><div class="row">' %}
-{% endfor %}
-    </div>
+<h4>Related Answers</h4>
+
+	<div class='row'>
+	{% for product in related %}
+
+		<div class='col-xs-6'>
+			{% include "products/product_thumbnail.html" with product=product price="True" %}
+		</div>
+		{% cycle '' '</div><div class="row">' %}
+	{% endfor %}
+
+		</div>
+
 
 </div>
-</div>
 <!-- End Product Sidebar -->
+
+
+
+
+</div>
+
+
+
 {% endblock %}

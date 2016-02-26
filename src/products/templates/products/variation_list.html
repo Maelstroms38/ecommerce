@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
-
-
+{% load crispy_forms_tags %}
 {% block content %}
 
-
+<div class="col-sm-12 text-center">
+<h1>Product Variations</h1>
 <table class='table'>
+
 {% for object in object_list %}
 
 <tr>
@@ -22,13 +23,13 @@
 
 {% for form in formset %}
 
-{{ form.instance.product.title }}
-{{ form.instance.title }}
-{{ form.as_p }}
+<h2>{{ form.instance.product.title }}
+{{ form.instance.title }}</h2>
+{{ form|crispy}}
 
 {% endfor %}
 <input type="submit" value='Update' class='btn' />
 </form>
-
+</div>
 
 {% endblock %}

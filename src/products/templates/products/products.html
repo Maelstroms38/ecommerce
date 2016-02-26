@@ -1,0 +1,12 @@
+<div class="row">
+{% for product in object_list %}
+
+<div class="col-xs-4 {{col_class_set}}">
+<!-- <h1>All Products <small><a href='{% url "categories" %}'>Categories</small></h1> -->
+{% include "products/product_thumbnail.html" with product=product price="True"  %}
+</div>
+{% if not col_class_set %}
+ {% cycle '' '' '' '</div><hr><div class="row">' %}
+ {% endif %}  
+{% endfor %}
+</div>

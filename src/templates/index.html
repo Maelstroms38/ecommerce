@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static from staticfiles %}
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <img src="{% static 'img/examplfy-logo-white.png' %}" width="400" height="280">
+                <br>
+                <a href="#question" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-primary" id="question">
+        <div class="container text-center">
+          <h3 class="text-faded">We will turn a question you need help with into a worked out example you can learn from.</h2>
+          <hr class="light">
+          <br>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                  <h2 class="text-faded">Ask our tutors.</h2>
+                  <hr class="light">
+                  <p class="text-faded">Get a video tutorial explaining how to solve your problem.</p>
+                  <form method="get" action="/products/ask">
+                        <input type="submit" value="Ask" class="btn btn-lg">
+                  </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-primary" style="background:#808080" id="about">
+      <div class="container text-center">
+        <h2>Who are we?</h2>
+        <hr style="border-color:white">
+        <p>We are a group of college students who have endured the frustration of staring at seemingly unsolvable
+          questions for too long. We recognize problem sets, homeworks, and web assigns are designed to enhance our
+          education, yet rarely find ourselves actually learning from them.</p>
+        <br><br>
+        <h2>What do we do?</h2>
+        <hr style="border-color:white">
+        <p>We turn your questions into worked out examples that you can learn from (For Free!).</p>
+      </div>
+    </section>
+
+<style>
+{% block style %}
+.navbar-static-top {
+  margin-bottom: 0px !important;
+}
+
+.jumbotron {
+  background-color:#388ff2;
+  color: #FFF;
+
+  {% if featured_image.make_image_background %}
+
+  background-image: url("{{ featured_image.image.url }}");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  {% endif %}
+}
+
+{% endblock %}
+</style>
+
+ 
+{% block jumbotron %}
+ {% if featured_image %}
+ <div class="jumbotron">
+ <div class="container">
+  <div class="row">
+    <div class='col-sm-12 text-center {% if featured_image_text_right %} pull-right {% endif %}'>
+    <h1>{{ featured_image.product.title }}</h1>
+    <p>{{ featured_image.product.description }}</p>
+    <p>
+    <a class="btn btn-lg btn-primary" href="{{ featured_image.product.get_absolute_url }}" role="button">More &raquo;</a>
+    </p>
+    </div>
+    {% if not featured_image.make_image_background %}
+    <div class='col-sm-6' >
+      <img src="{{ featured_image.image.url }}" class="img-responsive">
+    </div>
+    {% endif %}
+    </div>
+  </div>
+ </div>
+ {% else %}
+<div class="jumbotron">
+ <div class="container">
+  <div class="row">
+    <div class='col-sm-6'>
+    <h1>Examplefy Answers</h1>
+    <p>Examplefy's team of tutors provides answers!</p>
+    <p>
+    <a class="btn btn-lg btn-primary" href="/accounts/register/" role="button">Join Us &raquo;</a>
+    </p>
+    </div>
+    <div class='col-sm-6' >
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/2uLYO1LUf6Q" frameborder="0" allowfullscreen></iframe>
+
+    </div>
+    </div>
+  </div>
+ </div>
+ {% endif %}
+{% endblock %}
+
+
+<div class="row">
+  <h3 class="col-sm-offset-5">Featured Answers</h3>
+{% include "products/products.html" with object_list=products col_class_set="col-sm-3" %}
+
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">Let's Get In Touch!</h2>
+                    <hr class="primary">
+                </div>
+                <div class="col-lg-4 col-lg-offset-2 text-center">
+                  <p>If you have any thoughts, comments or suggestions about Examplfy we would love to hear them! Reach out to us with your ideas.</p>
+                    <i class="fa fa-envelope-o fa-3x wow bounceIn"></i>
+                    <p><a href="mailto:feedback@examplfy.com">feedback@examplfy.com</a></p>
+                </div>
+                <div class="col-lg-4 text-center">
+                  <p>Interested in becoming an Examplfy tutor? Reach out to us and let us know what subjects you are interested in tutoring.</p>
+                    <i class="fa fa-envelope-o fa-3x wow bounceIn" data-wow-delay=".1s"></i>
+                    <p><a href="mailto:contact@examplfy.com">contact@examplfy.com</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+<style>
+
+
+{% endblock %}

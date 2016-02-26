@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+<header>
+        <div class="header-content" id="ask_form">
+            <div class="header-content-inner">
+              <h1 style="color:white" class="form">Edit Questions</h1>
+              <hr class="form">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-md-2"></div>
+
+                    <div class="col-md-4 text-center" id="concept_group">
+                      <button type="button" class="btn btn-primary dropdown-toggle form" data-toggle="dropdown" id="concept_button">
+                        Choose a Concept
+                      </button>
+                      <ul class="dropdown-menu" role="menu" id="concept_dropdown" >
+                        <li><a>Please select a Category</a></li>
+                      </ul>
+                    </div>
+
+                <div class="row">
+                    <form action="" method="POST">
+        			{% csrf_token %}
+        			{{ form|crispy }}
+        			<button class="btn btn-primary btn-lg">Update</button>
+    				</form>
+                  </div>
+                </div>
+              </div>
+      </header>
+
+{% endblock %}
+    
